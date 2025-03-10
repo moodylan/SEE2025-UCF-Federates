@@ -1,0 +1,4 @@
+# Ignore Pitch license files
+*.jar
+pitch/
+lib/pitch-license.jar
