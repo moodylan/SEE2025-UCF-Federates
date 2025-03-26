@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<objectModel
+	xmlns="http://standards.ieee.org/IEEE1516-2010" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://standards.ieee.org/IEEE1516-2010 IEEE1516-DIF-2010.xsd"
+	>
+	<modelIdentification>
+		<name>LandingBeacon Module</name>
+		<type>FOM</type>
+		<version>1.0</version>
+		<securityClassification>unclassified</securityClassification>
+		<purpose></purpose>
+		<applicationDomain></applicationDomain>
+		<description>LandingBeacon Federate Definition</description>
+		<useLimitation></useLimitation>
+		<other></other>
+	</modelIdentification>
+
+	<objects>
+		<objectClass>
+			<name>HLAobjectRoot</name>
+			<objectClass>
+				<name>PhysicalEntity</name>
+
+				<!-- LANDER -->
+				<objectClass>
+					<name>Lander</name>
+					<sharing>PublishSubscribe</sharing>
+					<semantics>Represents the lunar lander moving towards the Spaceport.</semantics>
+					<attribute>
+						<name>position</name>
+                        <dataType>Position</dataType>
+                        <updateType>Periodic</updateType>
+                        <updateCondition></updateCondition>
+                        <ownership>NoTransfer</ownership>
+                        <sharing>PublishSubscribe</sharing>
+                        <transportation>HLAreliable</transportation>
+                        <order>Receive</order>
+                        <semantics>This represents the position of the Lander.</semantics>
+					</attribute>
+                </objectClass>
+
+				<!-- SPACEPORT -->
+				<objectClass>
+					<name>Spaceport</name>
+					<sharing>PublishSubscribe</sharing>
+					<semantics>Represents the lunar spaceport which interacts with Lander and Beacon.</semantics>
+					<attribute>
+						<name>position</name>
+                        <dataType>Position</dataType>
+                        <updateType>Periodic</updateType>
+                        <updateCondition></updateCondition>
+                        <ownership>NoTransfer</ownership>
+                        <sharing>PublishSubscribe</sharing>
+                        <transportation>HLAreliable</transportation>
+                        <order>Receive</order>
+                        <semantics>This represents the position of the Spaceport.</semantics>
+					</attribute>
+				</objectClass>
+
+				<!-- ✅ FIXED: LANDING BEACON -->
+                <objectClass>
+					<name>LandingBeacon</name>
+					<sharing>PublishSubscribe</sharing>
+					<semantics>Landing beacon entity that forwards position and status</semantics>
+					<attribute>
+						<name>position</name>
+						<dataType>Position</dataType>
+						<updateType>Periodic</updateType>
+						<ownership>NoTransfer</ownership>
+						<sharing>PublishSubscribe</sharing>
+						<transportation>HLAreliable</transportation>
+						<order>Receive</order>
+						<semantics>Current position of the beacon</semantics>
+					</attribute>
+					<attribute>
+						<name>Status</name>
+						<dataType>HLAinteger32BE</dataType>
+						<updateType>Periodic</updateType>
+						<ownership>NoTransfer</ownership>
+						<sharing>PublishSubscribe</sharing>
+						<transportation>HLAreliable</transportation>  <!-- ✅ FIXED MISSING FIELD -->
+						<order>Receive</order>
+						<semantics>Status of the beacon (active/inactive)</semantics>
+					</attribute>
+				</objectClass>
+                
+                <!-- ✅ NEW: LARS -->
+				<objectClass>
+					<name>Lars</name>
+					<sharing>PublishSubscribe</sharing>
+					<semantics>Lunar Autonomous Rover System - subscribes to beacon and reports back</semantics>
+					<attribute>
+						<name>position</name>
+						<dataType>Position</dataType>
+						<updateType>Periodic</updateType>
+						<ownership>NoTransfer</ownership>
+						<sharing>PublishSubscribe</sharing>
+						<transportation>HLAreliable</transportation>
+						<order>Receive</order>
+						<semantics>Current position of LARS rover</semantics>
+					</attribute>
+					<attribute>
+						<name>Status</name>
+						<dataType>HLAinteger32BE</dataType>
+						<updateType>Periodic</updateType>
+						<ownership>NoTransfer</ownership>
+						<sharing>PublishSubscribe</sharing>
+						<transportation>HLAreliable</transportation>
+						<order>Receive</order>
+						<semantics>Status of LARS rover</semantics>
+					</attribute>
+				</objectClass>
+				
+			</objectClass>
+		</objectClass>
+	</objects>
+
+	<interactions>
+		<interactionClass>
+			<name>HLAinteractionRoot</name>
+			<!-- ✅ Existing MTR/Execution Control Interaction -->
+			<interactionClass>
+				<name>ControlCommands</name>
+				<sharing>PublishSubscribe</sharing>
+				<transportation>HLAreliable</transportation>
+				<order>Receive</order>
+				<semantics>Used for execution control (e.g., RUNNING, FREEZE)</semantics>
+				<parameter>
+					<name>move</name>
+					<dataType>MTRMode</dataType>
+					<semantics>Execution mode transition request</semantics>
+				</parameter>
+			</interactionClass>
+
+			<!-- ✅ New Interaction -->
+			<interactionClass>
+				<name>FederateMessage</name>
+				<sharing>PublishSubscribe</sharing>
+				<transportation>HLAreliable</transportation>
+				<order>Receive</order>
+				<semantics>General communication between federates</semantics>
+				<parameter>
+					<name>Sender</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Federate sending the message</semantics>
+				</parameter>
+				<parameter>
+					<name>Receiver</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Federate receiving the message (or ALL for broadcast)</semantics>
+				</parameter>
+				<parameter>
+					<name>MessageType</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Type of message (e.g., Request, Approval, Alert)</semantics>
+				</parameter>
+				<parameter>
+					<name>Content</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Message content</semantics>
+				</parameter>
+			</interactionClass>
+		</interactionClass>
+	</interactions>
+
+	<dataTypes>
+		<simpleDataTypes/>
+		<enumeratedDataTypes/>
+		<arrayDataTypes/>
+		<fixedRecordDataTypes/>
+		<variantRecordDataTypes/>
+	</dataTypes>
+	<notes/>
+</objectModel>
